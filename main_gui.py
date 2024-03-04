@@ -3,6 +3,7 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 from velocity_calculator import VelocityCalculator
+from effort_capacity_calculator import EffortCapacityCalculator
 
 class SprintCalculatorApp:
     def __init__(self, master):
@@ -26,7 +27,24 @@ class SprintCalculatorApp:
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid list of sprint points.")
 
+    def prompt_effort_capacity_details(self):
+        self.team_members_details = []
+        self.sprint_days = simpledialog.askinteger("Input", "Enter number of sprint days:")
+        self.hours_per_day = simpledialog.askinteger("Input", "Enter number of working hours per day:")
+        team_members = simpledialog.askinteger("Input", "Enter number of team members:")
+        
+        for i in range(team_members):
+            pto_days = simpledialog.askinteger("Input", f"Enter PTO days for team member {i+1}:")
+            ceremony_days = simpledialog.askinteger("Input", f"Enter ceremony days for team member {i+1}:")
+            self.team_members_details.append({'pto_days': pto_days, 'ceremony_days': ceremony_days})
+        
+        self.calculate_effort_capacity()
 
+    def calculate_effort_capacity(self):
+        avg_hours, total_hours = EffortCapacityCalculator.calculate_team_effort_hours(
+            self.sprint_days, self.team_members_details, self.hours_per_day
+        )
+        self.result_label.config(text=f"Average Effort-Hours/Person: {avg_hours:.2f}, Total Effort-Hours for Team: {total_hours:.2f}")
 
 if __name__ == "__main__":
     root = tk.Tk()
